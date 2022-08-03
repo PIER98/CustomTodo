@@ -10,6 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var savedShortCutItem : UIApplicationShortcutItem?
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -17,36 +18,67 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
+        if let shortcutItem = connectionOptions.shortcutItem { // get the shortCutItem here
+                   savedShortCutItem = shortcutItem
+               }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+//  perform  quick action even if the app is not loaded yet
+        if savedShortCutItem != nil {
+                  _ = handleShortcutItem(shortcutItem: savedShortCutItem!)
+              }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
+
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+        
+        }
+    
+    func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem,
+        completionHandler: @escaping (Bool) -> Void) {
+        //  perform quick action if the app is already running
+                let board : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+                if shortcutItem.type == "addTodo" {
+                let add : UIViewController
+                let vc : UIViewController
+                let navController : UINavigationController
+                navController = board.instantiateViewController(withIdentifier: "Nav") as! UINavigationController
+                 add = board.instantiateViewController(withIdentifier: "addTodo") as! AddToDoViewController
+                 vc = board.instantiateViewController(withIdentifier: "root") as! ViewController
+                window?.rootViewController? = navController
+                vc.present(add, animated: true)
+                navController.pushViewController(add, animated: true)
     }
+        
+}
+    func handleShortcutItem(shortcutItem : UIApplicationShortcutItem) {
+                let board : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+                if shortcutItem.type == "addTodo" {
+                let add : UIViewController
+                let vc : UIViewController
+                let navController : UINavigationController
+                navController = board.instantiateViewController(withIdentifier: "Nav") as! UINavigationController
+                 add = board.instantiateViewController(withIdentifier: "addTodo") as! AddToDoViewController
+                 vc = board.instantiateViewController(withIdentifier: "root") as! ViewController
+                window?.rootViewController? = navController
+                vc.present(add, animated: true)
+                navController.pushViewController(add, animated: true)
+    }
+    }
+    
+ 
+    
 
 
 }
-
